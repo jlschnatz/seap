@@ -6,10 +6,10 @@
 \usage{
 simulate_meta(
   k,
-  k_size,
-  k_mu,
-  delta,
-  sigma2,
+  n_size,
+  n_mu,
+  d_mu,
+  d_sigma2,
   d_delta_hat,
   w_pbs,
   discr = 5,
@@ -20,13 +20,13 @@ simulate_meta(
 \arguments{
 \item{k}{number of primary studies in the 'population'}
 
-\item{k_size}{size parameter of negative binomial distribution}
+\item{n_size}{size parameter of negative binomial distribution}
 
-\item{k_mu}{mean parameter of negative binomial sample size distribution}
+\item{n_mu}{mean parameter of negative binomial sample size distribution}
 
-\item{delta}{mean parameter of normal effect size distribution}
+\item{d_mu}{mean parameter of normal effect size distribution}
 
-\item{sigma2}{variance parameter of normal effect size distribution}
+\item{d_sigma2}{variance parameter of normal effect size distribution}
 
 \item{d_delta_hat}{expected true effect size}
 

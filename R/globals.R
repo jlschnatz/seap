@@ -1,1 +1,1 @@
-utils::globalVariables(c("density_weighted"))
+# utils::globalVariables(c("density_weighted"))

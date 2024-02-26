@@ -8,7 +8,7 @@
 p_from_nd <- function(n, d) {
   n_vec <- get_2n(n)
   t <- d / sqrt(1/n_vec[, 1] + 1/n_vec[, 2])
-  df <- sum(n_vec) - 2
+  df <- rowSums(n_vec) - 2
   p <- suppressWarnings(2 * stats::pt(abs(t), df, lower.tail = FALSE))
   return(p)
 }
@@ -23,7 +23,7 @@ p_from_nd <- function(n, d) {
 #'
 d_from_np <- function(n, lower.tail = FALSE, alpha = 0.05) {
   n_vec <- get_2n(n)
-  df <- sum(n_vec) - 2
+  df <- rowSums(n_vec) - 2
   t_value <- stats::qt(alpha/2, df, lower.tail = lower.tail)
   d <- t_value * sqrt(1/n_vec[1] + 1/n_vec[2])
   return(d)
@@ -49,5 +49,18 @@ named_list <- function(...) {
   if (any(nonames)) nm[nonames] <- snm[nonames]
   names(l) <- nm
   return(l)
+}
+
+rescale_se_d <- function(n, d_sigma) {
+  se <- d_sigma / sqrt(n)
+  return(se / mean(se) * d_sigma)
+}
+
+#' Check if a number is a power of 2 plus 1
+#' @return a logical vector
+#' @param x a integer vector
+pow2_add1 <- function(x) {
+  xint <- vctrs::vec_cast(x, to = integer(), call = rlang::caller_env())
+  bitwAnd(xint-1, xint-2) == 0
 }
 
