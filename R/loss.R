@@ -19,5 +19,3 @@ kl_div <- function(P, Q) {
   quot[is.infinite(quot)] <- .Machine$double.xmax
   return(sum(P * log(quot)))
 }
-
-

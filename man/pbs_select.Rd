@@ -19,7 +19,3 @@ boolean vector of selection
 \description{
 Selection Bias based on Publication Bias
 }
-\examples{
-p <- c(0.02, 0.06, 0.1)
-pbs_select(p, 0.2, 0.05)
-}

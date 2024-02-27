@@ -15,8 +15,3 @@ a named numeric vector with the estimated parameters (mu, sigma)
 \description{
 Return the maximum likelihood estimates of the parameters of a normal distribution
 }
-\examples{
-# Not run
-x <- rnorm(100, mean = 0, sd = 0.5)
-estimate_norm(x)
-}

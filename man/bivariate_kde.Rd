@@ -7,7 +7,8 @@
 bivariate_kde(
   x,
   bw = c("silverman", "scott", "sheather-jones", "ucv", "bcv"),
-  n_grid
+  n_grid,
+  lims
 )
 }
 \arguments{
@@ -16,16 +17,12 @@ bivariate_kde(
 \item{bw}{a character string specifying the bandwidth selection method}
 
 \item{n_grid}{a integer vector (2L) specifying the number of equally spaced gridpoints in each direction (should be a power of 2 + 1)}
+
+\item{lims}{a list with length 2L specifying the limits of the kernel density estimate (returned by \code{find_kde_limits})}
 }
 \value{
 a matrix with the estimated densities
 }
 \description{
 Estimate a bivariate kernel density estimate
-}
-\examples{
-# Not run
-k <- 100
-X <- cbind(d = rnorm(k, mean = 0, sd = 0.5), n = rnbinom(k, size = 5, mu = 100))
-bivariate_kde(X, bw = "silverman", n_grid = c(2^8 + 1, 2^8 + 1))
 }

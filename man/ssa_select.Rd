@@ -4,24 +4,20 @@
 \alias{ssa_select}
 \title{Selection Bias based on Sample Size Adjustment}
 \usage{
-ssa_select(n, d_delta_hat, discr = 0.5, beta = 0.2)
+ssa_select(n, delta_hat, slope_ssp = 0.5, beta = 0.2)
 }
 \arguments{
 \item{n}{vector of sample sizes}
 
-\item{d_delta_hat}{expected effect size}
+\item{delta_hat}{expected effect size}
 
-\item{discr}{discrimination parameter}
+\item{slope_ssp}{discrimination parameter}
 
 \item{beta}{type II error rate}
 }
 \value{
-boolean vector of selection
+boolean vector of length n
 }
 \description{
 Selection Bias based on Sample Size Adjustment
-}
-\examples{
-n <- c(50, 20, 130)
-ssa_select(n, 0.2, 0.2)
 }

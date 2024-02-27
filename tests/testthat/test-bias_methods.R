@@ -22,6 +22,3 @@ test_that("Error if expected delta is 0", {
     object = mean(ssa_select(n = rep(20, 1e6), d_delta_hat = 0, beta = 0.2)),
   )
 })
-
-
-

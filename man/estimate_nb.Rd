@@ -17,9 +17,3 @@ a named numeric vector with the estimated parameters (phi, mu)
 \description{
 Uses the method of moments to estimate the parameters of a negative binomial distribution
 }
-\examples{
-# Not run
-x <- rnbinom(100, size = 5, mu = 100)
-estimate_nb(x, eps = 1e-5)
-
-}

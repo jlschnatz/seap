@@ -2,56 +2,66 @@
 % Please edit documentation in R/simulate_meta.R
 \name{simulate_meta}
 \alias{simulate_meta}
-\title{Simulate Meta-Analytical Data with Selection Bias (Publication Bias and Sample Size Adjustment Bias)}
+\title{Simulate Meta-Analytical Data with Selection Bias (Publication Bias and Sample Size Planning)}
 \usage{
 simulate_meta(
-  k,
-  n_size,
-  n_mu,
-  d_mu,
-  d_sigma2,
-  d_delta_hat,
+  k_sim,
+  phi_n,
+  mu_n,
+  mu_d,
+  sigma2_d,
+  delta_hat,
   w_pbs,
-  discr = 5,
+  slope_ssp = 4,
   beta = 0.2,
-  alpha = 0.05
+  alpha = 0.05,
+  only_pbs = FALSE
 )
 }
 \arguments{
-\item{k}{number of primary studies in the 'population'}
+\item{k_sim}{number of simulated studies (approximate due to selection bias)}
 
-\item{n_size}{size parameter of negative binomial distribution}
+\item{phi_n}{size parameter of negative binomial distribution}
 
-\item{n_mu}{mean parameter of negative binomial sample size distribution}
+\item{mu_n}{mean parameter of negative binomial sample size distribution}
 
-\item{d_mu}{mean parameter of normal effect size distribution}
+\item{mu_d}{mean parameter of normal effect size distribution}
 
-\item{d_sigma2}{variance parameter of normal effect size distribution}
+\item{sigma2_d}{variance parameter of normal effect size distribution}
 
-\item{d_delta_hat}{expected true effect size}
+\item{delta_hat}{expected true effect size}
 
 \item{w_pbs}{weight for probability of selection given p(select | p > alpha)}
 
-\item{discr}{discrimination parameter for sigmoid function}
+\item{slope_ssp}{discrimination parameter for sigmoid function}
 
 \item{beta}{type II error rate}
 
 \item{alpha}{type I error rate}
+
+\item{only_pbs}{logical, if TRUE, only publication bias is applied}
 }
 \value{
 matrix of simulated data with columns named n and d and row size depends on selection mechanism
 }
 \description{
 This function simulates primary study data for a meta-analysis, incorporating selection biases such as publication bias
-and bias due to sample size adjustment. The simulation is based on a population of potential primary studies with assumed
+and bias due to sample size planning The simulation is based on a population of potential primary studies with assumed
 marginal distributions of effect sizes (normal distribution) and sample sizes (negative-binomial distribution).
 
 The selection bias is introduced through two mechanisms:
 \itemize{
-\item Publication bias is introduced by a selection mechanism that chooses studies with p-values above a specified alpha-level
-with a probability denoted by \code{w_pbs}.
-\item Sample size adjustment bias is introduced by a selection mechanism that chooses studies with sample sizes below a required
-sample size, given estimates from power-analysis with a specified power-level and expected effect size. The probability
-of selection is denoted by \code{w_ssa}.
+\item Publication bias in introduced via a selection mechanism by which studies with p-values above a specified alpha-level threshold are selected with probability \code{w_pbs}.
+\item Sample size planning bias is introduced by a selection mechanism by which the marginal distribution of sample sizes is weighted with a sigmoidal function that depends on the expected true effect size \code{delta_hat} and the type II error rate \code{beta}.
 }
+}
+\examples{
+# Not run
+x <- simulate_meta(
+  k_sim = 100, phi_n = 5, mu_n = 100, mu_d = 0, sigma2_d = 1,
+  delta_hat = 0.2, w_pbs = 0.5, slope_ssp = 4,
+  beta = 0.2, alpha = 0.05
+  )
+head(x)
+plot(x)
 }

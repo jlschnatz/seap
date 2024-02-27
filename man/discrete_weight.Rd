@@ -7,13 +7,13 @@
 discrete_weight(p, w_pbs, alpha, detailed = FALSE)
 }
 \arguments{
-\item{p}{vector of p-values}
+\item{p}{Numeric vector of p-values}
 
-\item{w_pbs}{weights for probability of selection given P(p | p > alpha)}
+\item{w_pbs}{Numeric scalar. Weight for probability of selection given P(p | p > alpha)}
 
-\item{alpha}{type I error rate}
+\item{alpha}{Numeric scalar. Type I error rate}
 
-\item{detailed}{return detailed output (default: FALSE)}
+\item{detailed}{Logical scalar. Return detailed output (default: FALSE)}
 }
 \value{
 If detailed = FALSE, returns a vector of weights. If detailed = TRUE, returns a list with p, w, w_pbs, and alpha.

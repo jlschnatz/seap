@@ -6,8 +6,8 @@
 \usage{
 sigmoid_weight(
   n,
-  d_delta_hat,
-  discr = 5,
+  delta_hat,
+  slope_ssp = 5,
   alpha = 0.05,
   beta = 0.2,
   detailed = FALSE
@@ -16,9 +16,9 @@ sigmoid_weight(
 \arguments{
 \item{n}{vector of sample sizes}
 
-\item{d_delta_hat}{expected effect size}
+\item{delta_hat}{expected effect size}
 
-\item{discr}{discrimination parameter (defaults to 5)}
+\item{slope_ssp}{discrimination parameter (defaults to 5)}
 
 \item{alpha}{type I error rate (default = 0.05)}
 
