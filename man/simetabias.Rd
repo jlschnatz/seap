@@ -11,6 +11,37 @@ simetabias(emp_data, simetabias_control = simetabias_control())
 
 \item{simetabias_control}{Control parameters \code{\link{simetabias_control}} for details.}
 }
+\value{
+\value{
+The output is a nmsa_optim list object with following entries:
+\describe{
+\item{\code{par}}{
+Parameter values after optimization.
+}
+\item{\code{function_value}}{
+Loss function value after optimization.
+}
+\item{\code{trace}}{
+Matrix with interim results. NULL if \code{trace} is FALSE
+}
+\item{\code{fun}}{
+The loss function.
+}
+\item{\code{start}}{
+The initial function variables. Set with \code{\link{set_start}}.
+}
+\item{\code{lower}}{
+The lower boundaries of the function variables. Set with \code{\link{set_boundaries}}.
+}
+\item{\code{upper}}{
+The upper boundaries of the function variables. Set with \code{\link{set_boundaries}}.
+}
+\item{\code{control}}{
+Control arguments, see \code{\link{simetabias_control}} and \code{\link{set_hyperparameters}}.
+}
+}
+}
+}
 \description{
 Estimate and Correct Publication Bias in Meta-Analysis under Consideration of Sample Size Planning
 }

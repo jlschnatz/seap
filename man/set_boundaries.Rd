@@ -2,7 +2,7 @@
 % Please edit documentation in R/optim.R
 \name{set_boundaries}
 \alias{set_boundaries}
-\title{Boundary Constrainst for Simulated Annealing Optimization}
+\title{Boundary Constraints for Simulated Annealing Optimization}
 \usage{
 set_boundaries(
   phi_n = c(1, 50),

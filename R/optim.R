@@ -132,7 +132,7 @@ set_hyperparameters <- function(
   return(out)
 }
 
-#' Boundary Constrainst for Simulated Annealing Optimization
+#' Boundary Constraints for Simulated Annealing Optimization
 #' @description
 #' Construct a list of lower and upper boundaries for the optimization algorithm.
 #' @param phi_n integer vector of length 2, specifying the lower and upper boundaries for the dispersion parameter of the negative binomial distribution
@@ -176,6 +176,36 @@ set_start <- function(phi_n = NULL, mu_n = NULL, mu_d = NULL, sigma2_d = NULL, d
 #' @title Estimate and Correct Publication Bias in Meta-Analysis under Consideration of Sample Size Planning
 #' @param emp_data A dataframe or matrix with two columns: effect size (d) and sample size (n)
 #' @param simetabias_control Control parameters \code{\link{simetabias_control}} for details.
+#' @returns
+#' \value{
+#' The output is a nmsa_optim list object with following entries:
+#'   \describe{
+#'     \item{\code{par}}{
+#'       Parameter values after optimization.
+#'     }
+#'     \item{\code{function_value}}{
+#'       Loss function value after optimization.
+#'     }
+#'     \item{\code{trace}}{
+#'       Matrix with interim results. NULL if \code{trace} is FALSE
+#'     }
+#'     \item{\code{fun}}{
+#'       The loss function.
+#'     }
+#'     \item{\code{start}}{
+#'       The initial function variables. Set with \code{\link{set_start}}.
+#'     }
+#'     \item{\code{lower}}{
+#'       The lower boundaries of the function variables. Set with \code{\link{set_boundaries}}.
+#'     }
+#'     \item{\code{upper}}{
+#'       The upper boundaries of the function variables. Set with \code{\link{set_boundaries}}.
+#'     }
+#'     \item{\code{control}}{
+#'       Control arguments, see \code{\link{simetabias_control}} and \code{\link{set_hyperparameters}}.
+#'     }
+#'   }
+#' }
 #' @export
 #' @example man/examples/simetabias.R
 simetabias <- function(emp_data, simetabias_control = simetabias_control()) {
@@ -246,7 +276,7 @@ simetabias <- function(emp_data, simetabias_control = simetabias_control()) {
     }
   }
 
-  start_vec <- unlist(start)
+  start_vec <- unlist(sapply(start, unname))
 
   # run optimization
   hyperparameters$ac_acc <- hyperparameters$ac_acc * loss_function(start_vec)
