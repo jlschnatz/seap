@@ -1,5 +1,17 @@
 #' @export
 print.simetabias_control <- function(x, ...) {
+  c_bounds <- Map(function(lower, upper) c(lower, upper), x$bounds$lower, x$bounds$upper)
+  format_bounds <- sapply(names(c_bounds), function(var) {
+    paste0(var, ": [", toString(c_bounds[[var]]), "]")
+  }, USE.NAMES = FALSE)
+
+  not_specified_start <- sapply(x$start, is.null)
+  x$start[not_specified_start] <- "automatic, see doc."
+
+  format_start <- sapply(names(x$start), function(var) paste0(var, ": [", toString(x$start[[var]]), "]"))
+  if (is.null(x$hyperparameters$vf)) x$hyperparameters$vf <- "not specified"
+
+  cli::cli({
   cli::cli_h1("Control Parameters for Simetabias Publication Bias Estimation")
   cli::cli_h2("KDE Estimation Parameters:")
   cli::cli_li(
@@ -19,18 +31,6 @@ print.simetabias_control <- function(x, ...) {
     )
   )
   cli::cli_h2("Optimization parameters:")
-  c_bounds <- Map(function(lower, upper) c(lower, upper), x$bounds$lower, x$bounds$upper)
-  format_bounds <- sapply(names(c_bounds), function(var) {
-    paste0(var, ": [", toString(c_bounds[[var]]), "]")
-  }, USE.NAMES = FALSE)
-
-  not_specified_start <- sapply(x$start, is.null)
-  x$start[not_specified_start] <- "automatic, see doc."
-
-  format_start <- sapply(names(x$start), function(var) {
-    paste0(var, ": [", toString(x$start[[var]]), "]")
-  })
-
   cli::cli_li(
     items = c(
       "{.field bounds} ({.fn set_boundaries}):  {.val {format_bounds}}",
@@ -38,7 +38,6 @@ print.simetabias_control <- function(x, ...) {
     )
   )
   cli::cli_h2("Simulated Annealing Optimization Parameters")
-  if (is.null(x$hyperparameters$vf)) x$hyperparameters$vf <- "not specified"
   cli::cli_text("Via {.fn set_hyperparameters}:")
   cli::cli_li(
     items = c(
@@ -55,6 +54,7 @@ print.simetabias_control <- function(x, ...) {
       "{.field ac_acc} - Accuracy of the stopac break criterion: {.val {x$hyperparameters$ac_acc}}"
     )
   )
+  })
   invisible(x)
 }
 
@@ -87,7 +87,7 @@ simetabias_control <- function(bw = c("silverman", "scott", "sheather-jones", "u
   if (length(pr) != 2) cli::cli_abort("{.arg pr} must be a vector of length 2.")
   if (pr[1] >= pr[2]) cli::cli_abort("the first element in {.arg pr} must be smaller than the second element.")
   if (!rlang::is_scalar_integerish(k_sim)) cli::cli_abort("{.arg i} must be a scalar integer.")
-  if (k_sim < 5000) cli::cli_alert_warning("{.arg i} is less than a 5000. This is not recommended!")
+  if (k_sim < 5000) cli::cli_alert_warning("{.arg k_sim} is less than a 5000. This is not recommended!")
   bw <- rlang::arg_match(bw)
   if (only_pbs) {
     cli::cli_alert_info("Running the optimization algorithm with {.code only_pbs = TRUE}.")
@@ -177,6 +177,7 @@ set_start <- function(phi_n = NULL, mu_n = NULL, mu_d = NULL, sigma2_d = NULL, d
 #' @param emp_data A dataframe or matrix with two columns: effect size (d) and sample size (n)
 #' @param simetabias_control Control parameters \code{\link{simetabias_control}} for details.
 #' @export
+#' @example man/examples/simetabias.R
 simetabias <- function(emp_data, simetabias_control = simetabias_control()) {
   # extract control parameters
   k_sim <- simetabias_control$k_sim
