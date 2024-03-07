@@ -1,14 +1,14 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# simetabias
+# seap
 
 ## Installation
 
-You can install the development version of simetabias from
+You can install the development version of seap from
 [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("jlschnatz/simetabias")
+devtools::install_github("jlschnatz/seap")
 ```

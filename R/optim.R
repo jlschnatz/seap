@@ -1,5 +1,5 @@
 #' @export
-print.simetabias_control <- function(x, ...) {
+print.seap_control <- function(x, ...) {
   c_bounds <- Map(function(lower, upper) c(lower, upper), x$bounds$lower, x$bounds$upper)
   format_bounds <- sapply(names(c_bounds), function(var) {
     paste0(var, ": [", toString(c_bounds[[var]]), "]")
@@ -12,7 +12,7 @@ print.simetabias_control <- function(x, ...) {
   if (is.null(x$hyperparameters$vf)) x$hyperparameters$vf <- "not specified"
 
   cli::cli({
-  cli::cli_h1("Control Parameters for Simetabias Publication Bias Estimation")
+  cli::cli_h1("Control Parameters for SEAP Publication Bias Estimation")
   cli::cli_h2("KDE Estimation Parameters:")
   cli::cli_li(
     items = c(
@@ -58,9 +58,9 @@ print.simetabias_control <- function(x, ...) {
   invisible(x)
 }
 
-#' @title Control of Important Simetabias Parameters
+#' @title Control of Important SEAP Parameters
 #' @description
-#' Contruct control structures for the simetabias publication bias estimation framework
+#' Contruct control structures for the SEAP publication bias estimation framework
 #' @param bw bandwidth selection method. One of "silverman" (\link[stats]{bw.nrd0}), "scott" (\link[stats]{bw.nrd}),
 #' "sheather-jones" (\link[stats]{bw.SJ}), "ucv" (\link[stats]{bw.ucv}) or "bcv" (\link[stats]{bw.bcv}).
 #' @param n_grid integer vector of length 2, specifying the number evenly spaced grid points along each axis for density estimation.
@@ -76,7 +76,7 @@ print.simetabias_control <- function(x, ...) {
 #' @param hyperparameters a list generated with \code{\link{set_hyperparameters}} specifying the hyperparameters for the simulated annealing optimization algorithm
 #' @export
 #'
-simetabias_control <- function(bw = c("silverman", "scott", "sheather-jones", "ucv", "bcv"),
+seap_control <- function(bw = c("silverman", "scott", "sheather-jones", "ucv", "bcv"),
                                n_grid = c(2**7 + 1, 2**7 + 1), pr = c(0.005, 0.995), k_sim = 1e4,
                                bounds = set_boundaries(), start = set_start(),
                                alpha = .05, beta = .2, slope_ssp = 4, only_pbs = FALSE,
@@ -102,7 +102,7 @@ simetabias_control <- function(bw = c("silverman", "scott", "sheather-jones", "u
     bw, n_grid, pr, k_sim, alpha, beta, slope_ssp, trace, only_pbs, bounds, start,
      hyperparameters
   )
-  class(out) <- "simetabias_control"
+  class(out) <- "seap_control"
   return(out)
 }
 
@@ -175,22 +175,18 @@ set_start <- function(phi_n = NULL, mu_n = NULL, mu_d = NULL, sigma2_d = NULL, d
 
 #' @title Estimate and Correct Publication Bias in Meta-Analysis under Consideration of Sample Size Planning
 #' @param emp_data A dataframe or matrix with two columns: effect size (d) and sample size (n)
-#' @param simetabias_control Control parameters \code{\link{simetabias_control}} for details.
+#' @param seap_control Control parameters \code{\link{seap_control}} for details.
 #' @returns
-#' \value{
-#' The output is a nmsa_optim list object with following entries:
+#' The output is a seap_optim list object with following entries:
 #'   \describe{
 #'     \item{\code{par}}{
-#'       Parameter values after optimization.
+#'       Named parameter values after optimization.
 #'     }
 #'     \item{\code{function_value}}{
 #'       Loss function value after optimization.
 #'     }
 #'     \item{\code{trace}}{
-#'       Matrix with interim results. NULL if \code{trace} is FALSE
-#'     }
-#'     \item{\code{fun}}{
-#'       The loss function.
+#'       Dataframe with interim results. NULL if \code{trace} is FALSE
 #'     }
 #'     \item{\code{start}}{
 #'       The initial function variables. Set with \code{\link{set_start}}.
@@ -202,28 +198,30 @@ set_start <- function(phi_n = NULL, mu_n = NULL, mu_d = NULL, sigma2_d = NULL, d
 #'       The upper boundaries of the function variables. Set with \code{\link{set_boundaries}}.
 #'     }
 #'     \item{\code{control}}{
-#'       Control arguments, see \code{\link{simetabias_control}} and \code{\link{set_hyperparameters}}.
+#'       Control arguments, see \code{\link{seap_control}} and \code{\link{set_hyperparameters}}.
+#'     }
+#'     \item{\code{runtime}}{
+#'       The runtime of the optimization in seconds.
 #'     }
 #'   }
-#' }
 #' @export
-#' @example man/examples/simetabias.R
-simetabias <- function(emp_data, simetabias_control = simetabias_control()) {
+#' @example man/examples/seap_example.R
+seap <- function(emp_data, seap_control = seap_control()) {
   # extract control parameters
-  k_sim <- simetabias_control$k_sim
-  bw <- simetabias_control$bw
-  n_grid <- simetabias_control$n_grid
-  alpha <- simetabias_control$alpha
-  beta <- simetabias_control$beta
-  slope_ssp <- simetabias_control$slope_ssp
-  only_pb <- simetabias_control$only_pb
-  trace <- simetabias_control$trace
-  pr <- simetabias_control$pr
+  k_sim <- seap_control$k_sim
+  bw <- seap_control$bw
+  n_grid <- seap_control$n_grid
+  alpha <- seap_control$alpha
+  beta <- seap_control$beta
+  slope_ssp <- seap_control$slope_ssp
+  only_pb <- seap_control$only_pb
+  trace <- seap_control$trace
+  pr <- seap_control$pr
   # lists
-  bounds <- simetabias_control$bounds
-  start <- simetabias_control$start
-  hyperparameters <- simetabias_control$hyperparameters
-  only_pbs <- simetabias_control$only_pbs
+  bounds <- seap_control$bounds
+  start <- seap_control$start
+  hyperparameters <- seap_control$hyperparameters
+  only_pbs <- seap_control$only_pbs
 
   # compute empirical kernel density estimate
   lims <- find_kde_limits(emp_data, pr = pr)
@@ -280,6 +278,7 @@ simetabias <- function(emp_data, simetabias_control = simetabias_control()) {
 
   # run optimization
   hyperparameters$ac_acc <- hyperparameters$ac_acc * loss_function(start_vec)
+  t1 <- Sys.time()
   opt <- optimization::optim_sa(
     fun = loss_function, start = start_vec,
     lower = bounds$lower, upper = bounds$upper,
@@ -287,5 +286,15 @@ simetabias <- function(emp_data, simetabias_control = simetabias_control()) {
     trace = trace,
     control = hyperparameters
   )
+  t2 <- Sys.time()
+  opt <- unclass(opt)
+  opt$runtime <- difftime(t2, t1, units = "secs")
+  if (!is.null(opt$trace)) {
+    opt$trace <- as.data.frame(opt$trace)
+    colnames(opt$trace) <- c("n_outer", "loss", names(opt$start), "n_inner", "temp", "goodcounter", paste0("rf_", names(opt$start)))
+  }
+  names(opt$par) <- names(opt$start)
+  opt$fun <- NULL
+  class(opt) <- "seap_optim"
   return(opt)
 }

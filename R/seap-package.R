@@ -1,5 +1,5 @@
 #' @keywords internal
-#' @aliases simetabias-package
+#' @aliases seap-package
 "_PACKAGE"
 
 

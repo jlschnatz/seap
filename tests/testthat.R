@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(simetabias)
+library(seap)
 
-test_check("simetabias")
+test_check("seap")

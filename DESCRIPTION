@@ -1,5 +1,5 @@
-Package: simetabias
-Title: Simulation based Estimation of Publication Bias under Consideration of Sample Size Planning in Meta-Analysis
+Package: seap
+Title: Simulation based Estimation and Adjustment of Publication Bias in Meta-Analysis
 Version: 0.0.0.9000
 Authors@R: c(
     person("Jan Luca", "Schnatz", , "schnatz@psych.uni-frankfurt.de", role = c("aut", "cre"))
@@ -8,7 +8,7 @@ Description: Provides functions for the simulation based estimation of publicati
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Imports: 
     cli (>= 3.6.2),
     KernSmooth (>= 2.23.22),

@@ -13,14 +13,14 @@ knitr::opts_chunk$set(
 )
 ```
 
-# simetabias
+# seap
 
 ## Installation
 
-You can install the development version of simetabias from [GitHub](https://github.com/) with:
+You can install the development version of seap from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("jlschnatz/simetabias")
+devtools::install_github("jlschnatz/seap")
 ```
 
