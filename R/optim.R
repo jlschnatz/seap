@@ -1,5 +1,5 @@
 #' @export
-print.seap_control <- function(x, ...) {
+print.speec_control <- function(x, ...) {
   c_bounds <- Map(function(lower, upper) c(lower, upper), x$bounds$lower, x$bounds$upper)
   format_bounds <- sapply(names(c_bounds), function(var) {
     paste0(var, ": [", toString(c_bounds[[var]]), "]")
@@ -12,7 +12,7 @@ print.seap_control <- function(x, ...) {
   if (is.null(x$hyperparameters$vf)) x$hyperparameters$vf <- "not specified"
 
   cli::cli({
-  cli::cli_h1("Control Parameters for SEAP Publication Bias Estimation")
+  cli::cli_h1("Control Parameters for SPEEC Publication Bias Estimation")
   cli::cli_h2("KDE Estimation Parameters:")
   cli::cli_li(
     items = c(
@@ -58,9 +58,9 @@ print.seap_control <- function(x, ...) {
   invisible(x)
 }
 
-#' @title Control of Important SEAP Parameters
+#' @title Control of Important SPEEC Parameters
 #' @description
-#' Contruct control structures for the SEAP publication bias estimation framework
+#' Contruct control structures for the SPEEC publication bias estimation framework
 #' @param bw bandwidth selection method. One of "silverman" (\link[stats]{bw.nrd0}), "scott" (\link[stats]{bw.nrd}),
 #' "sheather-jones" (\link[stats]{bw.SJ}), "ucv" (\link[stats]{bw.ucv}) or "bcv" (\link[stats]{bw.bcv}).
 #' @param n_grid integer vector of length 2, specifying the number evenly spaced grid points along each axis for density estimation.
@@ -76,7 +76,7 @@ print.seap_control <- function(x, ...) {
 #' @param hyperparameters a list generated with \code{\link{set_hyperparameters}} specifying the hyperparameters for the simulated annealing optimization algorithm
 #' @export
 #'
-seap_control <- function(bw = c("silverman", "scott", "sheather-jones", "ucv", "bcv"),
+speec_control <- function(bw = c("silverman", "scott", "sheather-jones", "ucv", "bcv"),
                                n_grid = c(2**7 + 1, 2**7 + 1), pr = c(0.005, 0.995), k_sim = 1e4,
                                bounds = set_boundaries(), start = set_start(),
                                alpha = .05, beta = .2, slope_ssp = 4, only_pbs = FALSE,
@@ -102,7 +102,7 @@ seap_control <- function(bw = c("silverman", "scott", "sheather-jones", "ucv", "
     bw, n_grid, pr, k_sim, alpha, beta, slope_ssp, trace, only_pbs, bounds, start,
      hyperparameters
   )
-  class(out) <- "seap_control"
+  class(out) <- "speec_control"
   return(out)
 }
 
@@ -175,9 +175,9 @@ set_start <- function(phi_n = NULL, mu_n = NULL, mu_d = NULL, sigma2_d = NULL, d
 
 #' @title Estimate and Correct Publication Bias in Meta-Analysis under Consideration of Sample Size Planning
 #' @param emp_data A dataframe or matrix with two columns: effect size (d) and sample size (n)
-#' @param seap_control Control parameters \code{\link{seap_control}} for details.
+#' @param speec_control Control parameters \code{\link{speec_control}} for details.
 #' @returns
-#' The output is a seap_optim list object with following entries:
+#' The output is a speec_optim list object with following entries:
 #'   \describe{
 #'     \item{\code{par}}{
 #'       Named parameter values after optimization.
@@ -198,30 +198,30 @@ set_start <- function(phi_n = NULL, mu_n = NULL, mu_d = NULL, sigma2_d = NULL, d
 #'       The upper boundaries of the function variables. Set with \code{\link{set_boundaries}}.
 #'     }
 #'     \item{\code{control}}{
-#'       Control arguments, see \code{\link{seap_control}} and \code{\link{set_hyperparameters}}.
+#'       Control arguments, see \code{\link{speec_control}} and \code{\link{set_hyperparameters}}.
 #'     }
 #'     \item{\code{runtime}}{
 #'       The runtime of the optimization in seconds.
 #'     }
 #'   }
 #' @export
-#' @example man/examples/seap_example.R
-seap <- function(emp_data, seap_control = seap_control()) {
+#' @example man/examples/speec_example.R
+speec <- function(emp_data, speec_control = speec_control()) {
   # extract control parameters
-  k_sim <- seap_control$k_sim
-  bw <- seap_control$bw
-  n_grid <- seap_control$n_grid
-  alpha <- seap_control$alpha
-  beta <- seap_control$beta
-  slope_ssp <- seap_control$slope_ssp
-  only_pb <- seap_control$only_pb
-  trace <- seap_control$trace
-  pr <- seap_control$pr
+  k_sim <- speec_control$k_sim
+  bw <- speec_control$bw
+  n_grid <- speec_control$n_grid
+  alpha <- speec_control$alpha
+  beta <- speec_control$beta
+  slope_ssp <- speec_control$slope_ssp
+  only_pb <- speec_control$only_pb
+  trace <- speec_control$trace
+  pr <- speec_control$pr
   # lists
-  bounds <- seap_control$bounds
-  start <- seap_control$start
-  hyperparameters <- seap_control$hyperparameters
-  only_pbs <- seap_control$only_pbs
+  bounds <- speec_control$bounds
+  start <- speec_control$start
+  hyperparameters <- speec_control$hyperparameters
+  only_pbs <- speec_control$only_pbs
 
   # compute empirical kernel density estimate
   lims <- find_kde_limits(emp_data, pr = pr)
@@ -295,6 +295,6 @@ seap <- function(emp_data, seap_control = seap_control()) {
   }
   names(opt$par) <- names(opt$start)
   opt$fun <- NULL
-  class(opt) <- "seap_optim"
+  class(opt) <- "speec_optim"
   return(opt)
 }

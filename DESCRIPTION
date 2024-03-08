@@ -1,10 +1,10 @@
-Package: seap
-Title: Simulation based Estimation and Adjustment of Publication Bias in Meta-Analysis
+Package: speec
+Title: Simulation-based Publication Bias Estimation and Effect Size Correction
 Version: 0.0.0.9000
 Authors@R: c(
     person("Jan Luca", "Schnatz", , "schnatz@psych.uni-frankfurt.de", role = c("aut", "cre"))
   )
-Description: Provides functions for the simulation based estimation of publication bias and sample size planning in meta-analysis. 
+Description: Simulation-based Estimation Method of Publication Bias and Effect Size Correction under Publication Bias.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -16,7 +16,7 @@ Imports:
     pwr (>= 1.3.0),
     rlang (>= 1.1.3),
     stats (>= 4.3.2),
-    vctrs
+    vctrs (>= 0.6.5)
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

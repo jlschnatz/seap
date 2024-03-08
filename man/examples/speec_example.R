@@ -6,7 +6,7 @@ if (interactive()) {
     slope_ssp  = 0, only_pbs = TRUE
   )
 
-  control <- seap_control(
+  control <- speec_control(
     bw = "sheather-jones",
     n_grid = c(2^7+1, 2^7+1),
     pr = c(0.005, 0.995),
@@ -48,9 +48,9 @@ if (interactive()) {
   )
 
   t1 <- Sys.time()
-  result <- seap(
+  result <- speec(
     emp_data = emp_data,
-    simetabias_control = control
+    speec_control = control
   )
   t2 <- Sys.time()
   t2 - t1

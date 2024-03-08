@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(seap)
+library(speec)
 
-test_check("seap")
+test_check("speec")

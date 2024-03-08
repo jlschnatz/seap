@@ -1,5 +1,5 @@
 #' @keywords internal
-#' @aliases seap-package
+#' @aliases speec-package
 "_PACKAGE"
 
 
