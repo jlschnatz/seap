@@ -4,16 +4,14 @@
 \alias{estimate_nb}
 \title{Estimate the parameters of a alternative parametrized negative binomial distribution}
 \usage{
-estimate_nb(x, eps = 1e-04)
+estimate_nb(x)
 }
 \arguments{
 \item{x}{a numeric vector}
-
-\item{eps}{a numeric scalar that determines the tolerance for convergence}
 }
 \value{
 a named numeric vector with the estimated parameters (phi, mu)
 }
 \description{
-Uses the method of moments to estimate the parameters of a negative binomial distribution
+Estimate the parameters of a alternative parametrized negative binomial distribution
 }

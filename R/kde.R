@@ -5,8 +5,8 @@ estimate_nb <- function(x) {
   mu_start <- mean(x)
   phi_start <- length(x) / sum((x / mu_start - 1)^2)
   par_start <- c(phi_start, mu_start)
-  ll <- function(par, x) -sum(dnbinom(x, size = par[1], mu = par[2], log = TRUE))
-  params <- suppressWarnings(optim(par_start, ll, x = x)$par)
+  ll <- function(par, x) -sum(stats::dnbinom(x, size = par[1], mu = par[2], log = TRUE))
+  params <- suppressWarnings(stats::optim(par_start, ll, x = x)$par)
   names(params) <- c("phi_n", "mu_n")
   return(params)
 }
@@ -17,9 +17,9 @@ estimate_nb <- function(x) {
 #' @description
 #' Return the maximum likelihood estimates of the parameters of a normal distribution
 estimate_norm <- function(x) {
-  ll <- function(par, x) -sum(dnorm(x, mean = par[1], sd = sqrt(par[2]), log = TRUE))
+  ll <- function(par, x) -sum(stats::dnorm(x, mean = par[1], sd = sqrt(par[2]), log = TRUE))
   par_start <- c(mean(x), stats::sd(x))
-  params <- suppressWarnings(optim(par_start, ll, x = x)$par)
+  params <- suppressWarnings(stats::optim(par_start, ll, x = x)$par)
   names(params) <- c("mu_d", "sigma2_d")
   return(params)
 }
