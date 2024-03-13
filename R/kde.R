@@ -1,21 +1,14 @@
 #' Estimate the parameters of a alternative parametrized negative binomial distribution
 #' @param x a numeric vector
-#' @param eps a numeric scalar that determines the tolerance for convergence
 #' @return a named numeric vector with the estimated parameters (phi, mu)
-#' @description
-#' Uses the method of moments to estimate the parameters of a negative binomial distribution
-estimate_nb <- function(x, eps = 1e-4) {
-  n <- length(x)
-  mu <- mean(x)
-  dfr <- n - 1
-  phi <- n / sum((x / mu - 1)^2)
-  del <- 1
-  while (abs(del) > eps) {
-    phi <- abs(phi)
-    del <- (sum(((x - mu)^2 / (mu + mu^2 / phi))) - dfr) / sum((x - mu)^2 / (mu + phi)^2)
-    phi <- phi - del
-  }
-  return(c("phi_n" = phi, "mu_n" = mu))
+estimate_nb <- function(x) {
+  mu_start <- mean(x)
+  phi_start <- length(x) / sum((x / mu_start - 1)^2)
+  par_start <- c(phi_start, mu_start)
+  ll <- function(par, x) -sum(dnbinom(x, size = par[1], mu = par[2], log = TRUE))
+  params <- suppressWarnings(optim(par_start, ll, x = x)$par)
+  names(params) <- c("phi_n", "mu_n")
+  return(params)
 }
 
 #' Estimate the parameters of a normal distribution
@@ -23,7 +16,13 @@ estimate_nb <- function(x, eps = 1e-4) {
 #' @return a named numeric vector with the estimated parameters (mu, sigma)
 #' @description
 #' Return the maximum likelihood estimates of the parameters of a normal distribution
-estimate_norm <- function(x) c("mu_d" = mean(x), "sigma2_d" = stats::var(x))
+estimate_norm <- function(x) {
+  ll <- function(par, x) -sum(dnorm(x, mean = par[1], sd = sqrt(par[2]), log = TRUE))
+  par_start <- c(mean(x), stats::sd(x))
+  params <- suppressWarnings(optim(par_start, ll, x = x)$par)
+  names(params) <- c("mu_d", "sigma2_d")
+  return(params)
+}
 
 pr_nb <- function(pr = c(0.005, 0.995), phi, mu) {
   if(any(pr <= 0) || any(pr >= 1)) cli::cli_abort("pr must be between 0 and 1")
@@ -34,10 +33,10 @@ pr_nb <- function(pr = c(0.005, 0.995), phi, mu) {
   return(q)
 }
 
-pr_norm <- function(pr = c(0.005, 0.995), mu, sigma) {
+pr_norm <- function(pr = c(0.005, 0.995), mu, sigma2) {
   if(any(pr < 0) || any(pr > 1)) cli::cli_abort("pr must be between 0 and 1")
-  lb <- stats::qnorm(pr[1], mean = mu, sd = sigma, lower.tail = TRUE)
-  ub <- stats::qnorm(pr[2], mean = mu, sd = sigma, lower.tail = TRUE)
+  lb <- stats::qnorm(pr[1], mean = mu, sd = sqrt(sigma2), lower.tail = TRUE)
+  ub <- stats::qnorm(pr[2], mean = mu, sd = sqrt(sigma2), lower.tail = TRUE)
   q <- c(lb, ub)
   names(q) <- c("lb", "ub")
   return(q)
@@ -55,7 +54,7 @@ find_kde_limits <- function(x, pr = c(0.005, 0.995)) {
   if (!all(c("d", "n") %in% colnames(x))) cli::cli_abort("x must have columns with names d and n")
   par_norm <- estimate_norm(x[, "d"])
   par_nb <- estimate_nb(x[, "n"])
-  q_norm <- pr_norm(pr = pr, mu = par_norm[1], sigma = par_norm[2])
+  q_norm <- pr_norm(pr = pr, mu = par_norm[1], sigma2 = par_norm[2])
   q_nb <- pr_nb(pr = pr, phi = par_nb[1], mu = par_nb[2])
   lim_d <- c(min(c(x[, "d"], q_norm)), max(c(x[, "d"], q_norm)))
   names(lim_d) <- c("lb_d", "ub_d")
