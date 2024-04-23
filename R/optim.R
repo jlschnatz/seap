@@ -10,18 +10,16 @@
 #' @param beta fixed type II error rate
 #' @param slope_ssp integer vector of length 1, specifying the discrimination parameter for the weighting function of sample size planning
 #' @param bounds a list generated with \code{\link{set_boundaries}} specifying the lower and upper bounds for the optimization algorithm
-#' @param start a named list generated with \code{\link{set_start}} specifying the starting values for the optimization algorithm
 #' @param only_pbs Logical scalar. If TRUE, the optimization algorithm will only consider the publication bias selection parameter. Default is FALSE.
 #' @param trace Logical scalar. If TRUE, interim results are stored. Necessary for the plot function. Default is TRUE.
 #' @param hyperparameters a list generated with \code{\link{set_hyperparameters}} specifying the hyperparameters for the simulated annealing optimization algorithm
 #' @export
 #'
 speec_control <- function(bw = c("silverman", "scott", "sheather-jones", "ucv", "bcv"),
-                               n_grid = c(2**7 + 1, 2**7 + 1), pr = c(0.005, 0.995), k_sim = 1e4,
-                               bounds = set_boundaries(), start = set_start(),
-                               alpha = .05, beta = .2, slope_ssp = 4, only_pbs = FALSE,
-                               trace = TRUE, hyperparameters = set_hyperparameters()
-                               ) {
+                          n_grid = c(2**7 + 1, 2**7 + 1), pr = c(0.005, 0.995), k_sim = 1e4,
+                          bounds = set_boundaries(), alpha = .05, beta = .2, slope_ssp = 4, only_pbs = TRUE,
+                          hyperparameters = set_hyperparameters()
+                          ) {
   if (length(n_grid) != 2) cli::cli_abort("n_grid must be a vector of length 2.")
   if (any(pr < 0) || any(pr > 1)) cli::cli_abort("pr must be between 0 and 1.")
   if (length(pr) != 2) cli::cli_abort("{.arg pr} must be a vector of length 2.")
@@ -35,41 +33,31 @@ speec_control <- function(bw = c("silverman", "scott", "sheather-jones", "ucv", 
     slope_ssp <- 0
     bounds$lower <- bounds$lower[which(names(bounds$lower) != "delta_hat")]
     bounds$upper <- bounds$upper[which(names(bounds$upper) != "delta_hat")]
-    start <- start[which(names(start) != "delta_hat")]
   }
-
-  out <- named_list(
-    bw, n_grid, pr, k_sim, alpha, beta, slope_ssp, trace, only_pbs, bounds, start,
-     hyperparameters
-  )
+  out <- named_list(bw, n_grid, pr, k_sim, alpha, beta, slope_ssp, only_pbs, bounds, hyperparameters)
   class(out) <- "speec_control"
   return(out)
 }
 
-#' @title Control of Important Hyperparameters for the Simulated Annealing Optimization
+#' @title Control of Important Hyperparameters for the Differential Evolution Optimization
 #' @description
-#' Contruct control structures for the simulated annealing optimization algorithm
-#' @param vf Function that determines the variation of the function variables for the next iteration. The variation function is allowed to depend on the vector of variables of the current iteration, the vector of random factors rf and the temperature of the current iteration. Default is a uniform distributed random number with relative range rf.
-#' @param rf Numeric vector. Random factor vector that determines the variation of the random number of vf in relation to the dimension of the function variables for the following iteration. Default is 1. If dyn_rf is enabled, the rf change dynamically over time.
-#' @param dyn_rf Logical scalar. rf change dynamically over time to ensure increasing precision with increasing number of iterations. Default is TRUE, see 'details'.
-#' @param t0 Numeric scalar. Initial temperature. Default is 1000.
-#' @param nlimit Integer scalar. Maximum number of iterations of the inner loop. Default is 100.
-#' @param r Numeric. Temperature reduction in the outer loop. Default is 0.6.
-#' @param k Numeric. Constant for the Metropolis function. Default is 1.
-#' @param t_min Numeric. Temperature where outer loop stops. Default is 0.1.
-#' @param maxgood Integer. Break criterion to improve the algorithm performance. Maximum number of loss function improvements in the inner loop. Breaks the inner loop. Default is 100.
-#' @param stopac Integer. Break criterion to improve the algorithm performance. Maximum number of repetitions where the loss improvement is lower than ac_acc. Breaks the inner loop. Default is 30.
-#' @param ac_acc Numeric. Accuracy of the stopac break criterion in relation to the response. Default is 1/10000 of the function value at initial variables combination.
+#' @VTR 
+#' Contruct control structures for the differential evolution optimization algorithm
 #' @export
 #'
 set_hyperparameters <- function(
-    vf = NULL, rf = 1, dyn_rf = TRUE, t0 = 1e3, nlimit = 100,
-    r = 0.6, k = 1, t_min = 0.1, maxgood = 100, stopac = 30, ac_acc = 1e-4
-) {
-  if (!is.null(vf) && !is.function(vf)) cli::cli_abort("vf must be a function or NULL")
-  check_arg_len(1, rf, dyn_rf, t0, nlimit, r, k, t_min, maxgood, stopac, ac_acc)
-  out <- named_list(vf, rf, dyn_rf, t0, nlimit, r, k, t_min, maxgood, stopac, ac_acc)
-  return(out)
+  VTR = -Inf, strategy = 1, NP = 150, itermax = 1000,
+  CR = 0.1, F = 0.9, trace = TRUE, initialpop = NULL, storepopfrom = 1, 
+  storepopfreq = 1, p = 0.2, c = 0, bs = TRUE, reltol = sqrt(.Machine$double.eps),
+  steptol = itermax
+  ) {
+    RcppDE::DEoptim.control(
+      VTR = VTR, strategy = strategy, bs = bs, NP = NP,
+      itermax = itermax, CR = CR, F = F, trace = trace,
+      initialpop = initialpop, storepopfrom = storepopfrom,
+      storepopfreq = storepopfreq, p = p, c = c, reltol = reltol,
+      steptol = steptol
+    )
 }
 
 #' Boundary Constraints for Simulated Annealing Optimization
@@ -97,21 +85,6 @@ set_boundaries <- function(
   return(out)
 }
 
-#' Set Starting Values for Loss Function Optimization via Simulated Annealing
-#' @description
-#' Construct a named list of starting values for the optimization algorithm.
-#' @param phi_n numeric scalar, specifying the starting value for the dispersion parameter of the negative binomial distribution
-#' @param mu_n numeric scalar, specifying the starting value for the mean of the negative binomial distribution
-#' @param mu_d numeric scalar, specifying the starting value for the mean of the normal distribution
-#' @param sigma2_d numeric scalar, specifying the starting value for the standard deviation of the normal distribution
-#' @param delta_hat numeric scalar, specifying the starting value for the expected effect size for sample size planning
-#' @param w_pbs numeric scalar (between 0 and 1), specifying the starting value for the publiation bias weights
-#' @return A named list of starting values for the optimization algorithm.
-#' @export
-set_start <- function(phi_n = NULL, mu_n = NULL, mu_d = NULL, sigma2_d = NULL, delta_hat = NULL, w_pbs = .5) {
-  check_arg_len(0:1, phi_n, mu_n, mu_d, sigma2_d, delta_hat, w_pbs)
-  named_list(phi_n, mu_n, mu_d, sigma2_d, delta_hat, w_pbs)
-}
 
 #' @title Estimate and Correct Publication Bias in Meta-Analysis under Consideration of Sample Size Planning
 #' @param emp_data A dataframe or matrix with two columns: effect size (d) and sample size (n)
@@ -124,9 +97,6 @@ set_start <- function(phi_n = NULL, mu_n = NULL, mu_d = NULL, sigma2_d = NULL, d
 #'     }
 #'     \item{\code{function_value}}{
 #'       Loss function value after optimization.
-#'     }
-#'     \item{\code{trace}}{
-#'       Dataframe with interim results. NULL if \code{trace} is FALSE
 #'     }
 #'     \item{\code{start}}{
 #'       The initial function variables. Set with \code{\link{set_start}}.
@@ -154,12 +124,8 @@ speec <- function(emp_data, speec_control = speec_control()) {
   alpha <- speec_control$alpha
   beta <- speec_control$beta
   slope_ssp <- speec_control$slope_ssp
-  only_pb <- speec_control$only_pb
-  trace <- speec_control$trace
   pr <- speec_control$pr
-  # lists
   bounds <- speec_control$bounds
-  start <- speec_control$start
   hyperparameters <- speec_control$hyperparameters
   only_pbs <- speec_control$only_pbs
 
@@ -187,54 +153,11 @@ speec <- function(emp_data, speec_control = speec_control()) {
       kl_div(fhat_empirical, fhat_theoretical)
     }
   }
-
-  # which args not provided
-  not_provided_start <- names(which(sapply(start, is.null)))
-  if (any(not_provided_start %in% c("phi_n", "mu_n"))) {
-    start_nb <- estimate_nb(emp_data[, "n"])
-    if (any(not_provided_start == "phi_n")) start$phi_n <- start_nb["phi_n"]
-    if (any(not_provided_start == "mu_n")) start$mu_n <- start_nb["mu_n"]
-  }
-
-  if (any(not_provided_start %in% c("mu_d", "sigma2_d"))) {
-    start_norm <- estimate_norm(emp_data[, "d"])
-    if (any(not_provided_start == "mu_d"))  start$mu_d <- start_norm["mu_d"]
-    if (any(not_provided_start == "sigma2_d")) start$sigma2_d <- start_norm["sigma2_d"]
-  }
-
-  if(any(not_provided_start %in% "w_pbs")) {
-    start$w_pbs <- 0.5
-  }
-
-  if(!only_pbs) {
-    if(any(not_provided_start %in% "delta_hat")) {
-      m <- mean(emp_data[, "d"])
-      if(m == 0) m <- 0.1
-      start$delta_hat <- m
-    }
-  }
-
-  start_vec <- unlist(sapply(start, unname))
-
-  # run optimization
-  hyperparameters$ac_acc <- hyperparameters$ac_acc * loss_function(start_vec)
   t1 <- Sys.time()
-  opt <- optimization::optim_sa(
-    fun = loss_function, start = start_vec,
-    lower = bounds$lower, upper = bounds$upper,
-    maximization = FALSE,
-    trace = trace,
-    control = hyperparameters
-  )
+  opt <- RcppDE::DEoptim(fn = loss_function, lower = bounds$lower, upper = bounds$upper, control, hyperparameters)
   t2 <- Sys.time()
   opt <- unclass(opt)
   opt$runtime <- difftime(t2, t1, units = "secs")
-  if (!is.null(opt$trace)) {
-    opt$trace <- as.data.frame(opt$trace)
-    colnames(opt$trace) <- c("n_outer", "loss", names(opt$start), "n_inner", "temp", "goodcounter", paste0("rf_", names(opt$start)))
-  }
-  names(opt$par) <- names(opt$start)
-  opt$fun <- NULL
   class(opt) <- "speec_optim"
   return(opt)
 }
