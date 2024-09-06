@@ -20,9 +20,6 @@ Named parameter values after optimization.
 \item{\code{function_value}}{
 Loss function value after optimization.
 }
-\item{\code{trace}}{
-Dataframe with interim results. NULL if \code{trace} is FALSE
-}
 \item{\code{start}}{
 The initial function variables. Set with \code{\link{set_start}}.
 }

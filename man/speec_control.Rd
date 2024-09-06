@@ -10,12 +10,10 @@ speec_control(
   pr = c(0.005, 0.995),
   k_sim = 10000,
   bounds = set_boundaries(),
-  start = set_start(),
   alpha = 0.05,
   beta = 0.2,
   slope_ssp = 4,
-  only_pbs = FALSE,
-  trace = TRUE,
+  only_pbs = TRUE,
   hyperparameters = set_hyperparameters()
 )
 }
@@ -31,8 +29,6 @@ speec_control(
 
 \item{bounds}{a list generated with \code{\link{set_boundaries}} specifying the lower and upper bounds for the optimization algorithm}
 
-\item{start}{a named list generated with \code{\link{set_start}} specifying the starting values for the optimization algorithm}
-
 \item{alpha}{fixed type I error rate}
 
 \item{beta}{fixed type II error rate}
@@ -41,9 +37,9 @@ speec_control(
 
 \item{only_pbs}{Logical scalar. If TRUE, the optimization algorithm will only consider the publication bias selection parameter. Default is FALSE.}
 
-\item{trace}{Logical scalar. If TRUE, interim results are stored. Necessary for the plot function. Default is TRUE.}
-
 \item{hyperparameters}{a list generated with \code{\link{set_hyperparameters}} specifying the hyperparameters for the simulated annealing optimization algorithm}
+
+\item{trace}{Logical scalar. If TRUE, interim results are stored. Necessary for the plot function. Default is TRUE.}
 }
 \description{
 Contruct control structures for the SPEEC publication bias estimation framework

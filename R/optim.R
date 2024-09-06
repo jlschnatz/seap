@@ -41,13 +41,12 @@ speec_control <- function(bw = c("silverman", "scott", "sheather-jones", "ucv", 
 
 #' @title Control of Important Hyperparameters for the Differential Evolution Optimization
 #' @description
-#' @VTR 
 #' Contruct control structures for the differential evolution optimization algorithm
 #' @export
 #'
 set_hyperparameters <- function(
   VTR = -Inf, strategy = 1, NP = 150, itermax = 1000,
-  CR = 0.1, F = 0.9, trace = TRUE, initialpop = NULL, storepopfrom = 1, 
+  CR = 0.1, F = 0.9, trace = TRUE, initialpop = NULL, storepopfrom = 1,
   storepopfreq = 1, p = 0.2, c = 0, bs = TRUE, reltol = sqrt(.Machine$double.eps),
   steptol = itermax
   ) {

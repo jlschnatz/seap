@@ -2,45 +2,26 @@
 % Please edit documentation in R/optim.R
 \name{set_hyperparameters}
 \alias{set_hyperparameters}
-\title{Control of Important Hyperparameters for the Simulated Annealing Optimization}
+\title{Control of Important Hyperparameters for the Differential Evolution Optimization}
 \usage{
 set_hyperparameters(
-  vf = NULL,
-  rf = 1,
-  dyn_rf = TRUE,
-  t0 = 1000,
-  nlimit = 100,
-  r = 0.6,
-  k = 1,
-  t_min = 0.1,
-  maxgood = 100,
-  stopac = 30,
-  ac_acc = 1e-04
+  VTR = -Inf,
+  strategy = 1,
+  NP = 150,
+  itermax = 1000,
+  CR = 0.1,
+  F = 0.9,
+  trace = TRUE,
+  initialpop = NULL,
+  storepopfrom = 1,
+  storepopfreq = 1,
+  p = 0.2,
+  c = 0,
+  bs = TRUE,
+  reltol = sqrt(.Machine$double.eps),
+  steptol = itermax
 )
 }
-\arguments{
-\item{vf}{Function that determines the variation of the function variables for the next iteration. The variation function is allowed to depend on the vector of variables of the current iteration, the vector of random factors rf and the temperature of the current iteration. Default is a uniform distributed random number with relative range rf.}
-
-\item{rf}{Numeric vector. Random factor vector that determines the variation of the random number of vf in relation to the dimension of the function variables for the following iteration. Default is 1. If dyn_rf is enabled, the rf change dynamically over time.}
-
-\item{dyn_rf}{Logical scalar. rf change dynamically over time to ensure increasing precision with increasing number of iterations. Default is TRUE, see 'details'.}
-
-\item{t0}{Numeric scalar. Initial temperature. Default is 1000.}
-
-\item{nlimit}{Integer scalar. Maximum number of iterations of the inner loop. Default is 100.}
-
-\item{r}{Numeric. Temperature reduction in the outer loop. Default is 0.6.}
-
-\item{k}{Numeric. Constant for the Metropolis function. Default is 1.}
-
-\item{t_min}{Numeric. Temperature where outer loop stops. Default is 0.1.}
-
-\item{maxgood}{Integer. Break criterion to improve the algorithm performance. Maximum number of loss function improvements in the inner loop. Breaks the inner loop. Default is 100.}
-
-\item{stopac}{Integer. Break criterion to improve the algorithm performance. Maximum number of repetitions where the loss improvement is lower than ac_acc. Breaks the inner loop. Default is 30.}
-
-\item{ac_acc}{Numeric. Accuracy of the stopac break criterion in relation to the response. Default is 1/10000 of the function value at initial variables combination.}
-}
 \description{
-Contruct control structures for the simulated annealing optimization algorithm
+Contruct control structures for the differential evolution optimization algorithm
 }

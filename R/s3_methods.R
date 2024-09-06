@@ -58,9 +58,10 @@ print.speec_control <- function(x, ...) {
   invisible(x)
 }
 
+#' @export
 plot.speec_optim <- function(x, type = c("loss", "rf", "par")) {
     trace_data <- x$trace
-    if(length(trace_data) == 0)) {
+    if(length(trace_data) == 0) {
         cli::cli_abort("Trace argument not set to {.val TRUE}. Can´t plot the results.")
     } else {
         type <- rlang::arg_match(type)
@@ -72,12 +73,12 @@ plot.speec_optim <- function(x, type = c("loss", "rf", "par")) {
             ggplot2::labs(x = "Outer loop iterations", y = "Loss")
         } else if(type == "rf") {
             trace_data <- trace_data[, grep("(^rf)|(n_outer)", names(trace_data))]
-            trace_data_long <- reshape(
-                data = trace_data, 
-                varying = list(c("rf_phi_n", "rf_mu_n", "rf_mu_d", "rf_sigma2_d", "rf_w_pbs")), 
-                v.names = "value", 
-                timevar = "parameter", 
-                times = c("rf_phi_n", "rf_mu_n", "rf_mu_d", "rf_sigma2_d", "rf_w_pbs"), 
+            trace_data_long <- stats::reshape(
+                data = trace_data,
+                varying = list(c("rf_phi_n", "rf_mu_n", "rf_mu_d", "rf_sigma2_d", "rf_w_pbs")),
+                v.names = "value",
+                timevar = "parameter",
+                times = c("rf_phi_n", "rf_mu_n", "rf_mu_d", "rf_sigma2_d", "rf_w_pbs"),
                 direction = "long"
                 )
             p <- ggplot2::ggplot(
@@ -89,12 +90,12 @@ plot.speec_optim <- function(x, type = c("loss", "rf", "par")) {
         } else if(type == "par") {
             trace_data <- trace_data[, grep("(_n$)|(_d$)|(n_outer)|(w_pbs)", names(trace_data))]
             trace_data <- trace_data[, !grepl("^rf_", names(trace_data))]
-            trace_data_long <- reshape(
-                data = trace_data, 
-                varying = list(c("phi_n", "mu_n", "mu_d", "sigma2_d", "w_pbs")), 
-                v.names = "value", 
-                timevar = "parameter", 
-                times = c("phi_n", "mu_n", "mu_d", "sigma2_d", "w_pbs"), 
+            trace_data_long <- stats::reshape(
+                data = trace_data,
+                varying = list(c("phi_n", "mu_n", "mu_d", "sigma2_d", "w_pbs")),
+                v.names = "value",
+                timevar = "parameter",
+                times = c("phi_n", "mu_n", "mu_d", "sigma2_d", "w_pbs"),
                 direction = "long"
                 )
             p <- ggplot2::ggplot(
@@ -104,7 +105,7 @@ plot.speec_optim <- function(x, type = c("loss", "rf", "par")) {
             ggplot2::facet_wrap(~parameter, scales = "free_y") +
             ggplot2::labs(x = "Outer loop iterations", "Parameter")
         }
-        p <- p + 
+        p <- p +
             ggplot2::geom_line() +
             ggplot2::theme_bw()
         return(p)
